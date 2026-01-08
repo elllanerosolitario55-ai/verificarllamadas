@@ -1,0 +1,26 @@
+{
+  "name": "phone-validator",
+  "version": "1.0.0",
+  "description": "Phone number validation tool for Europe, Central America, South America and North America",
+  "main": "netlify/functions/validate-phone.js",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "phone",
+    "validation",
+    "mobile",
+    "netlify",
+    "serverless"
+  ],
+  "author": "Nando",
+  "license": "MIT",
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

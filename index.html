@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneCheck Pro - Validador de Líneas Móviles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --accent-cyan: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-orange: #ff6b35;
+            --accent-purple: #a855f7;
+            --text-primary: #ffffff;
+            --text-secondary: #8b8b9e;
+            --border-color: #2a2a3a;
+            --gradient-1: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
+            --gradient-2: linear-gradient(135deg, #a855f7 0%, #00d4ff 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-1 {
+            top: -200px;
+            left: -200px;
+            background: var(--accent-cyan);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-glow-2 {
+            bottom: -200px;
+            right: -200px;
+            background: var(--accent-purple);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(100px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Main card */
+        .main-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--bg-secondary);
+            padding: 0.5rem;
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--gradient-1);
+            color: var(--bg-primary);
+        }
+
+        /* Input section */
+        .input-section {
+            display: none;
+        }
+
+        .input-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select,
+        .input-wrapper textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus,
+        .input-wrapper textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.15);
+        }
+
+        .input-wrapper select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b8b9e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 18px;
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .phone-input-group .country-select {
+            width: 180px;
+            flex-shrink: 0;
+        }
+
+        .phone-input-group .phone-number {
+            flex: 1;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: var(--bg-primary);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Results section */
+        .results-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .results-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .stat-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .stat-dot.valid { background: var(--accent-green); }
+        .stat-dot.invalid { background: var(--accent-orange); }
+        .stat-dot.pending { background: var(--accent-cyan); }
+
+        /* Results list */
+        .results-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .results-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .results-list::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        .results-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .result-status {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .result-status.valid {
+            background: rgba(0, 255, 136, 0.15);
+        }
+
+        .result-status.invalid {
+            background: rgba(255, 107, 53, 0.15);
+        }
+
+        .result-status.pending {
+            background: rgba(0, 212, 255, 0.15);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .result-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .result-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-valid {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+        }
+
+        .badge-invalid {
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--accent-orange);
+        }
+
+        /* Region badges */
+        .regions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .region-card {
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .region-card:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .region-card.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .region-flag {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .region-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .region-prefix {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Info cards */
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .info-card {
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+
+        .info-card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Config section */
+        .config-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .config-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .api-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Export button */
+        .export-section {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .main-card {
+                padding: 1.5rem;
+            }
+
+            .logo-text {
+                font-size: 1.75rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .phone-input-group {
+                flex-direction: column;
+            }
+
+            .phone-input-group .country-select {
+                width: 100%;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">📱</div>
+                <span class="logo-text">PhoneCheck Pro</span>
+            </div>
+            <p class="tagline">Validación profesional de números móviles para Europa, América Central, del Sur y del Norte</p>
+        </header>
+
+        <div class="main-card">
+            <div class="tabs">
+                <button class="tab active" data-tab="single">Número Individual</button>
+                <button class="tab" data-tab="bulk">Validación Masiva</button>
+                <button class="tab" data-tab="config">Configuración</button>
+            </div>
+
+            <!-- Single number validation -->
+            <div class="input-section active" id="single-section">
+                <div class="form-group">
+                    <label>Región / País</label>
+                    <div class="regions-grid">
+                        <div class="region-card selected" data-region="europe">
+                            <div class="region-flag">🇪🇺</div>
+                            <div class="region-name">Europa</div>
+                            <div class="region-prefix">+34, +33, +49...</div>
+                        </div>
+                        <div class="region-card" data-region="north-america">
+                            <div class="region-flag">🇺🇸</div>
+                            <div class="region-name">Norteamérica</div>
+                            <div class="region-prefix">+1</div>
+                        </div>
+                        <div class="region-card" data-region="central-america">
+                            <div class="region-flag">🇲🇽</div>
+                            <div class="region-name">América Central</div>
+                            <div class="region-prefix">+52, +502...</div>
+                        </div>
+                        <div class="region-card" data-region="south-america">
+                            <div class="region-flag">🇧🇷</div>
+                            <div class="region-name">Sudamérica</div>
+                            <div class="region-prefix">+55, +54, +58...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de teléfono</label>
+                    <div class="phone-input-group">
+                        <div class="input-wrapper country-select">
+                            <select id="country-code">
+                                <optgroup label="🇪🇺 Europa">
+                                    <option value="34" selected>🇪🇸 España (+34)</option>
+                                    <option value="33">🇫🇷 Francia (+33)</option>
+                                    <option value="49">🇩🇪 Alemania (+49)</option>
+                                    <option value="44">🇬🇧 Reino Unido (+44)</option>
+                                    <option value="39">🇮🇹 Italia (+39)</option>
+                                    <option value="351">🇵🇹 Portugal (+351)</option>
+                                    <option value="31">🇳🇱 Países Bajos (+31)</option>
+                                    <option value="32">🇧🇪 Bélgica (+32)</option>
+                                    <option value="41">🇨🇭 Suiza (+41)</option>
+                                    <option value="43">🇦🇹 Austria (+43)</option>
+                                    <option value="48">🇵🇱 Polonia (+48)</option>
+                                </optgroup>
+                                <optgroup label="🇺🇸 Norteamérica">
+                                    <option value="1">🇺🇸 Estados Unidos (+1)</option>
+                                    <option value="1">🇨🇦 Canadá (+1)</option>
+                                </optgroup>
+                                <optgroup label="🇲🇽 América Central">
+                                    <option value="52">🇲🇽 México (+52)</option>
+                                    <option value="502">🇬🇹 Guatemala (+502)</option>
+                                    <option value="503">🇸🇻 El Salvador (+503)</option>
+                                    <option value="504">🇭🇳 Honduras (+504)</option>
+                                    <option value="505">🇳🇮 Nicaragua (+505)</option>
+                                    <option value="506">🇨🇷 Costa Rica (+506)</option>
+                                    <option value="507">🇵🇦 Panamá (+507)</option>
+                                </optgroup>
+                                <optgroup label="🇧🇷 Sudamérica">
+                                    <option value="54">🇦🇷 Argentina (+54)</option>
+                                    <option value="55">🇧🇷 Brasil (+55)</option>
+                                    <option value="56">🇨🇱 Chile (+56)</option>
+                                    <option value="57">🇨🇴 Colombia (+57)</option>
+                                    <option value="58">🇻🇪 Venezuela (+58)</option>
+                                    <option value="51">🇵🇪 Perú (+51)</option>
+                                    <option value="593">🇪🇨 Ecuador (+593)</option>
+                                    <option value="591">🇧🇴 Bolivia (+591)</option>
+                                    <option value="595">🇵🇾 Paraguay (+595)</option>
+                                    <option value="598">🇺🇾 Uruguay (+598)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="input-wrapper phone-number">
+                            <input type="tel" id="phone-number" placeholder="612345678" maxlength="15">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="validate-single-btn">
+                    <span>🔍</span>
+                    <span>Validar Número</span>
+                </button>
+            </div>
+
+            <!-- Bulk validation -->
+            <div class="input-section" id="bulk-section">
+                <div class="form-group">
+                    <label>Números de teléfono (uno por línea, incluir código de país con +)</label>
+                    <div class="input-wrapper">
+                        <textarea id="bulk-numbers" placeholder="+34612345678&#10;+1234567890&#10;+5491123456789&#10;+524421234567"></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="validate-bulk-btn">
+                    <span>🚀</span>
+                    <span>Validar Todos</span>
+                </button>
+            </div>
+
+            <!-- Configuration -->
+            <div class="input-section" id="config-section">
+                <div class="form-group">
+                    <label>API Provider</label>
+                    <div class="input-wrapper">
+                        <select id="api-provider">
+                            <option value="numverify">NumVerify (Recomendado)</option>
+                            <option value="abstractapi">AbstractAPI</option>
+                            <option value="veriphone">Veriphone</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>API Key</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="api-key" placeholder="Tu API key...">
+                    </div>
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+                    Para usar esta herramienta necesitas una API key de uno de los proveedores soportados.
+                    Puedes obtener una gratuita en:
+                    <a href="https://numverify.com" target="_blank" style="color: var(--accent-cyan);">numverify.com</a>,
+                    <a href="https://abstractapi.com" target="_blank" style="color: var(--accent-cyan);">abstractapi.com</a> o
+                    <a href="https://veriphone.io" target="_blank" style="color: var(--accent-cyan);">veriphone.io</a>
+                </p>
+
+                <button class="btn btn-primary" id="save-config-btn">
+                    <span>💾</span>
+                    <span>Guardar Configuración</span>
+                </button>
+            </div>
+
+            <!-- Results -->
+            <div class="results-section" id="results-section">
+                <div class="results-header">
+                    <h3 class="results-title">Resultados de Validación</h3>
+                    <div class="results-stats">
+                        <div class="stat">
+                            <span class="stat-dot valid"></span>
+                            <span id="valid-count">0</span> Válidos
+                        </div>
+                        <div class="stat">
+                            <span class="stat-dot invalid"></span>
+                            <span id="invalid-count">0</span> Inválidos
+                        </div>
+                        <div class="stat">
+                            <span class="stat-dot pending"></span>
+                            <span id="pending-count">0</span> Pendientes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-list" id="results-list">
+                    <!-- Results will be inserted here -->
+                </div>
+
+                <div class="export-section">
+                    <button class="btn btn-secondary" id="export-csv-btn">
+                        <span>📄</span>
+                        <span>Exportar CSV</span>
+                    </button>
+                    <button class="btn btn-secondary" id="export-json-btn">
+                        <span>{ }</span>
+                        <span>Exportar JSON</span>
+                    </button>
+                    <button class="btn btn-secondary" id="clear-results-btn">
+                        <span>🗑️</span>
+                        <span>Limpiar</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-title">Estado del Sistema</div>
+                <div class="api-status">
+                    <span class="api-status-dot"></span>
+                    <span id="api-status-text">API configurada y lista</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-card">
+                <div class="info-card-icon">🌍</div>
+                <h3>Cobertura Global</h3>
+                <p>Validación de números móviles para Europa, Norteamérica, América Central y Sudamérica con soporte para más de 200 países.</p>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon">⚡</div>
+                <h3>Validación en Tiempo Real</h3>
+                <p>Verifica formato, operador, tipo de línea (móvil/fijo) y estado del número usando APIs profesionales.</p>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon">🔒</div>
+                <h3>Seguro y Privado</h3>
+                <p>Los datos se procesan de forma segura a través de Netlify Functions. No almacenamos números ni resultados.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let config = {
+            apiProvider: localStorage.getItem('apiProvider') || 'numverify',
+            apiKey: localStorage.getItem('apiKey') || ''
+        };
+        let results = [];
+
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.input-section');
+        const regionCards = document.querySelectorAll('.region-card');
+        const countrySelect = document.getElementById('country-code');
+        const phoneInput = document.getElementById('phone-number');
+        const bulkInput = document.getElementById('bulk-numbers');
+        const validateSingleBtn = document.getElementById('validate-single-btn');
+        const validateBulkBtn = document.getElementById('validate-bulk-btn');
+        const saveConfigBtn = document.getElementById('save-config-btn');
+        const resultsSection = document.getElementById('results-section');
+        const resultsList = document.getElementById('results-list');
+        const apiStatusText = document.getElementById('api-status-text');
+
+        // Initialize
+        document.getElementById('api-provider').value = config.apiProvider;
+        document.getElementById('api-key').value = config.apiKey;
+        updateApiStatus();
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                sections.forEach(s => s.classList.remove('active'));
+                document.getElementById(`${tab.dataset.tab}-section`).classList.add('active');
+            });
+        });
+
+        // Region selection
+        regionCards.forEach(card => {
+            card.addEventListener('click', () => {
+                regionCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                filterCountriesByRegion(card.dataset.region);
+            });
+        });
+
+        function filterCountriesByRegion(region) {
+            const optgroups = countrySelect.querySelectorAll('optgroup');
+            const regionMap = {
+                'europe': '🇪🇺 Europa',
+                'north-america': '🇺🇸 Norteamérica',
+                'central-america': '🇲🇽 América Central',
+                'south-america': '🇧🇷 Sudamérica'
+            };
+
+            optgroups.forEach(group => {
+                if (group.label === regionMap[region]) {
+                    group.style.display = '';
+                    const firstOption = group.querySelector('option');
+                    if (firstOption) countrySelect.value = firstOption.value;
+                }
+            });
+        }
+
+        // Validation functions
+        async function validateNumber(phone, countryCode = null) {
+            const fullNumber = countryCode ? `+${countryCode}${phone}` : phone;
+            
+            try {
+                const response = await fetch('/.netlify/functions/validate-phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: fullNumber,
+                        provider: config.apiProvider,
+                        apiKey: config.apiKey
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API error');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Validation error:', error);
+                return {
+                    valid: false,
+                    number: fullNumber,
+                    error: error.message
+                };
+            }
+        }
+
+        // Single validation
+        validateSingleBtn.addEventListener('click', async () => {
+            const phone = phoneInput.value.trim();
+            const countryCode = countrySelect.value;
+
+            if (!phone) {
+                alert('Por favor ingresa un número de teléfono');
+                return;
+            }
+
+            if (!config.apiKey) {
+                alert('Por favor configura tu API key primero');
+                tabs[2].click();
+                return;
+            }
+
+            setButtonLoading(validateSingleBtn, true);
+            
+            const result = await validateNumber(phone, countryCode);
+            addResult(result);
+            
+            setButtonLoading(validateSingleBtn, false);
+        });
+
+        // Bulk validation
+        validateBulkBtn.addEventListener('click', async () => {
+            const numbers = bulkInput.value.trim().split('\n').filter(n => n.trim());
+
+            if (numbers.length === 0) {
+                alert('Por favor ingresa al menos un número');
+                return;
+            }
+
+            if (!config.apiKey) {
+                alert('Por favor configura tu API key primero');
+                tabs[2].click();
+                return;
+            }
+
+            setButtonLoading(validateBulkBtn, true);
+            document.getElementById('pending-count').textContent = numbers.length;
+            resultsSection.classList.add('active');
+
+            for (const number of numbers) {
+                const cleanNumber = number.trim();
+                if (cleanNumber) {
+                    const result = await validateNumber(cleanNumber);
+                    addResult(result);
+                    await new Promise(resolve => setTimeout(resolve, 500)); // Rate limiting
+                }
+            }
+
+            setButtonLoading(validateBulkBtn, false);
+        });
+
+        // Save config
+        saveConfigBtn.addEventListener('click', () => {
+            config.apiProvider = document.getElementById('api-provider').value;
+            config.apiKey = document.getElementById('api-key').value;
+            
+            localStorage.setItem('apiProvider', config.apiProvider);
+            localStorage.setItem('apiKey', config.apiKey);
+            
+            updateApiStatus();
+            alert('Configuración guardada correctamente');
+        });
+
+        // Helper functions
+        function setButtonLoading(btn, loading) {
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<div class="spinner"></div><span>Validando...</span>';
+            } else {
+                btn.disabled = false;
+                const originalText = btn === validateSingleBtn 
+                    ? '<span>🔍</span><span>Validar Número</span>'
+                    : '<span>🚀</span><span>Validar Todos</span>';
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function addResult(result) {
+            results.push(result);
+            renderResults();
+        }
+
+        function renderResults() {
+            resultsSection.classList.add('active');
+            
+            const validCount = results.filter(r => r.valid).length;
+            const invalidCount = results.filter(r => !r.valid).length;
+            
+            document.getElementById('valid-count').textContent = validCount;
+            document.getElementById('invalid-count').textContent = invalidCount;
+            document.getElementById('pending-count').textContent = 0;
+
+            resultsList.innerHTML = results.map(result => `
+                <div class="result-item">
+                    <div class="result-status ${result.valid ? 'valid' : 'invalid'}">
+                        ${result.valid ? '✓' : '✗'}
+                    </div>
+                    <div class="result-info">
+                        <div class="result-number">${result.number || result.international_format || 'N/A'}</div>
+                        <div class="result-details">
+                            ${result.country_name ? `<span class="result-detail">🌍 ${result.country_name}</span>` : ''}
+                            ${result.carrier ? `<span class="result-detail">📡 ${result.carrier}</span>` : ''}
+                            ${result.line_type ? `<span class="result-detail">📱 ${result.line_type}</span>` : ''}
+                            ${result.location ? `<span class="result-detail">📍 ${result.location}</span>` : ''}
+                        </div>
+                    </div>
+                    <span class="result-badge ${result.valid ? 'badge-valid' : 'badge-invalid'}">
+                        ${result.valid ? 'VÁLIDO' : 'INVÁLIDO'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function updateApiStatus() {
+            if (config.apiKey) {
+                apiStatusText.textContent = `API configurada (${config.apiProvider})`;
+                document.querySelector('.api-status-dot').style.background = 'var(--accent-green)';
+            } else {
+                apiStatusText.textContent = 'API no configurada - Ve a Configuración';
+                document.querySelector('.api-status-dot').style.background = 'var(--accent-orange)';
+            }
+        }
+
+        // Export functions
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            if (results.length === 0) return;
+            
+            const headers = ['Número', 'Válido', 'País', 'Operador', 'Tipo'];
+            const rows = results.map(r => [
+                r.number || r.international_format || '',
+                r.valid ? 'Sí' : 'No',
+                r.country_name || '',
+                r.carrier || '',
+                r.line_type || ''
+            ]);
+            
+            const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+            downloadFile(csv, 'phone-validation-results.csv', 'text/csv');
+        });
+
+        document.getElementById('export-json-btn').addEventListener('click', () => {
+            if (results.length === 0) return;
+            const json = JSON.stringify(results, null, 2);
+            downloadFile(json, 'phone-validation-results.json', 'application/json');
+        });
+
+        document.getElementById('clear-results-btn').addEventListener('click', () => {
+            results = [];
+            renderResults();
+            resultsSection.classList.remove('active');
+        });
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Phone input formatting
+        phoneInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^\d]/g, '');
+        });
+    </script>
+</body>
+</html>
