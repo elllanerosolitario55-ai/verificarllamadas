@@ -203,7 +203,7 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { phone, provider = 'numverify', apiKey } = JSON.parse(event.body);
+        const { phone, provider = 'numverify', apiKey: clientApiKey } = JSON.parse(event.body);
 
         if (!phone) {
             return {
@@ -213,7 +213,10 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // If no API key provided, use basic validation
+        // Use environment variable API key, fallback to client-provided key
+        const apiKey = process.env.NUMVERIFY_API_KEY || clientApiKey;
+
+        // If no API key available, use basic validation
         if (!apiKey) {
             const result = basicValidation(phone);
             return {
