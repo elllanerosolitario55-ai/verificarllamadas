@@ -636,7 +636,6 @@
             <div class="tabs">
                 <button class="tab active" data-tab="single">Número Individual</button>
                 <button class="tab" data-tab="bulk">Validación Masiva</button>
-                <button class="tab" data-tab="config">Configuración</button>
             </div>
 
             <!-- Single number validation -->
@@ -739,40 +738,6 @@
                 </button>
             </div>
 
-            <!-- Configuration -->
-            <div class="input-section" id="config-section">
-                <div class="form-group">
-                    <label>API Provider</label>
-                    <div class="input-wrapper">
-                        <select id="api-provider">
-                            <option value="numverify">NumVerify (Recomendado)</option>
-                            <option value="abstractapi">AbstractAPI</option>
-                            <option value="veriphone">Veriphone</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>API Key</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="api-key" placeholder="Tu API key...">
-                    </div>
-                </div>
-
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
-                    Para usar esta herramienta necesitas una API key de uno de los proveedores soportados.
-                    Puedes obtener una gratuita en:
-                    <a href="https://numverify.com" target="_blank" style="color: var(--accent-cyan);">numverify.com</a>,
-                    <a href="https://abstractapi.com" target="_blank" style="color: var(--accent-cyan);">abstractapi.com</a> o
-                    <a href="https://veriphone.io" target="_blank" style="color: var(--accent-cyan);">veriphone.io</a>
-                </p>
-
-                <button class="btn btn-primary" id="save-config-btn">
-                    <span>💾</span>
-                    <span>Guardar Configuración</span>
-                </button>
-            </div>
-
             <!-- Results -->
             <div class="results-section" id="results-section">
                 <div class="results-header">
@@ -817,7 +782,7 @@
                 <div class="config-title">Estado del Sistema</div>
                 <div class="api-status">
                     <span class="api-status-dot"></span>
-                    <span id="api-status-text">API configurada y lista</span>
+                    <span id="api-status-text">API configurada en servidor ✓</span>
                 </div>
             </div>
         </div>
@@ -843,10 +808,6 @@
 
     <script>
         // State
-        let config = {
-            apiProvider: localStorage.getItem('apiProvider') || 'numverify',
-            apiKey: localStorage.getItem('apiKey') || ''
-        };
         let results = [];
 
         // DOM Elements
@@ -858,15 +819,8 @@
         const bulkInput = document.getElementById('bulk-numbers');
         const validateSingleBtn = document.getElementById('validate-single-btn');
         const validateBulkBtn = document.getElementById('validate-bulk-btn');
-        const saveConfigBtn = document.getElementById('save-config-btn');
         const resultsSection = document.getElementById('results-section');
         const resultsList = document.getElementById('results-list');
-        const apiStatusText = document.getElementById('api-status-text');
-
-        // Initialize
-        document.getElementById('api-provider').value = config.apiProvider;
-        document.getElementById('api-key').value = config.apiKey;
-        updateApiStatus();
 
         // Tab switching
         tabs.forEach(tab => {
@@ -915,8 +869,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         phone: fullNumber,
-                        provider: config.apiProvider,
-                        apiKey: config.apiKey
+                        provider: 'numverify'
                     })
                 });
 
@@ -945,12 +898,6 @@
                 return;
             }
 
-            if (!config.apiKey) {
-                alert('Por favor configura tu API key primero');
-                tabs[2].click();
-                return;
-            }
-
             setButtonLoading(validateSingleBtn, true);
             
             const result = await validateNumber(phone, countryCode);
@@ -968,12 +915,6 @@
                 return;
             }
 
-            if (!config.apiKey) {
-                alert('Por favor configura tu API key primero');
-                tabs[2].click();
-                return;
-            }
-
             setButtonLoading(validateBulkBtn, true);
             document.getElementById('pending-count').textContent = numbers.length;
             resultsSection.classList.add('active');
@@ -988,18 +929,6 @@
             }
 
             setButtonLoading(validateBulkBtn, false);
-        });
-
-        // Save config
-        saveConfigBtn.addEventListener('click', () => {
-            config.apiProvider = document.getElementById('api-provider').value;
-            config.apiKey = document.getElementById('api-key').value;
-            
-            localStorage.setItem('apiProvider', config.apiProvider);
-            localStorage.setItem('apiKey', config.apiKey);
-            
-            updateApiStatus();
-            alert('Configuración guardada correctamente');
         });
 
         // Helper functions
@@ -1050,16 +979,6 @@
                     </span>
                 </div>
             `).join('');
-        }
-
-        function updateApiStatus() {
-            if (config.apiKey) {
-                apiStatusText.textContent = `API configurada (${config.apiProvider})`;
-                document.querySelector('.api-status-dot').style.background = 'var(--accent-green)';
-            } else {
-                apiStatusText.textContent = 'API no configurada - Ve a Configuración';
-                document.querySelector('.api-status-dot').style.background = 'var(--accent-orange)';
-            }
         }
 
         // Export functions
