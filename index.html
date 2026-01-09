@@ -584,6 +584,32 @@
             margin-top: 1.5rem;
         }
 
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+        }
+
+        .footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--accent-green);
+            text-decoration: underline;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -804,6 +830,11 @@
                 <p>Los datos se procesan de forma segura a través de Netlify Functions. No almacenamos números ni resultados.</p>
             </div>
         </div>
+
+        <footer class="footer">
+            <p>© 2025 Todos los derechos reservados</p>
+            <p>Aplicación desarrollada por <a href="https://grupoyaiza.es/" target="_blank" rel="noopener">Grupo Yaiza</a></p>
+        </footer>
     </div>
 
     <script>
